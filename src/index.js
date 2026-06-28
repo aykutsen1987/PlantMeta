@@ -15,6 +15,12 @@ const plantRouter    = require('./routes/plant');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// ── Trust Proxy (Render/Cloudflare için zorunlu) ─────────────
+// Render, istekleri bir proxy üzerinden iletir.
+// Bu ayar olmadan express-rate-limit X-Forwarded-For başlığını
+// okuyamaz ve ERR_ERL_UNEXPECTED_X_FORWARDED_FOR hatası verir.
+app.set('trust proxy', 1);
+
 // ── Middleware ───────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());

@@ -130,7 +130,7 @@ const ANALYSIS_SCHEMA = `{
       "name": "Erken yanıklık",
       "scientificName": "Alternaria solani",
       "severity": "Orta",
-      "symptoms": "Yapraklarda koyu lekeler",
+      "symptoms": ["Yapraklarda koyu lekeler"],
       "cause": "Mantar enfeksiyonu",
       "solutions": ["Hasta yaprakları temizle", "Fungisit uygula"],
       "prevention": "İyi havalandırma sağla"

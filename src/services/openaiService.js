@@ -1,12 +1,21 @@
 // ============================================================
 // services/openaiService.js
-// OpenAI GPT-4o ile bitki analizi
+// Groq API ile bitki analizi (OpenAI SDK uyumlu)
+// Groq, OpenAI client ile %100 uyumludur — sadece baseURL farklı
 // ============================================================
 
 const OpenAI = require('openai');
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const MODEL  = process.env.OPENAI_MODEL || 'gpt-4o';
+// GROQ_API_KEY → https://console.groq.com/keys adresinden alın
+// .env dosyasına ekleyin: GROQ_API_KEY=gsk_xxxx
+const client = new OpenAI({
+    apiKey:  process.env.GROQ_API_KEY,
+    baseURL: 'https://api.groq.com/openai/v1'
+});
+
+// Groq'un vision destekli modeli
+// Alternatif: 'meta-llama/llama-4-maverick-17b-128e-instruct'
+const MODEL = process.env.GROQ_MODEL || 'meta-llama/llama-4-scout-17b-16e-instruct';
 
 /**
  * Bitki görselini analiz eder.
@@ -16,7 +25,6 @@ const MODEL  = process.env.OPENAI_MODEL || 'gpt-4o';
  */
 async function analyzePlant(imageBuffer, lang = 'tr') {
     const base64Image = imageBuffer.toString('base64');
-
     const systemPrompt = getSystemPrompt(lang);
 
     const response = await client.chat.completions.create({
@@ -29,12 +37,19 @@ async function analyzePlant(imageBuffer, lang = 'tr') {
                 content: [
                     {
                         type: 'image_url',
-                        image_url: { url: `data:image/jpeg;base64,${base64Image}`, detail: 'high' }
+                        image_url: {
+                            url: `data:image/jpeg;base64,${base64Image}`,
+                            detail: 'high'
+                        }
                     },
-                    { type: 'text', text: 'Bu bitkiyi analiz et ve JSON formatında yanıt ver.' }
+                    {
+                        type: 'text',
+                        text: 'Bu bitkiyi analiz et ve JSON formatında yanıt ver.'
+                    }
                 ]
             }
         ],
+        // Groq JSON mode — OpenAI ile aynı syntax
         response_format: { type: 'json_object' }
     });
 
